@@ -933,4 +933,142 @@ export default function Home() {
 
         .detail-tabs {
           display: flex;
-          gap: 1
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+          border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-content {
+          animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-panel {
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+
+        .description-box {
+          background: rgba(255, 255, 255, 0.03);
+          padding: 1.5rem;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .description-box h3 {
+          margin-bottom: 1rem;
+          color: #fff;
+          font-size: 1.5rem;
+        }
+
+        .description-content {
+          line-height: 1.8;
+          color: #ccc;
+        }
+
+        .description-content :global(p) {
+          margin-bottom: 1rem;
+        }
+
+        .tags-section h4 {
+          margin-bottom: 1rem;
+          color: #fff;
+        }
+
+        .tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+        }
+
+        .tag {
+          padding: 0.5rem 1rem;
+          background: rgba(102, 126, 234, 0.2);
+          border: 1px solid rgba(102, 126, 234, 0.4);
+          border-radius: 20px;
+          color: #667eea;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .media-panel {
+          min-height: 200px;
+        }
+
+        .screenshots-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 1rem;
+        }
+
+        .screenshot {
+          width: 100%;
+          border-radius: 12px;
+          transition: transform 0.3s;
+          cursor: pointer;
+        }
+
+        .screenshot:hover {
+          transform: scale(1.05);
+        }
+
+        .no-content {
+          text-align: center;
+          color: #888;
+          padding: 3rem;
+          font-size: 1.1rem;
+        }
+
+        @media (max-width: 1024px) {
+          .game-header-section {
+            grid-template-columns: 1fr;
+          }
+
+          .meta-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .logo {
+            font-size: 2rem;
+          }
+
+          .search-form {
+            flex-direction: column;
+          }
+
+          .search-input-wrapper {
+            min-width: 100%;
+          }
+
+          .game-title {
+            font-size: 1.8rem;
+          }
+
+          .games-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .download-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .tabs {
+            flex-direction: column;
+          }
+
+          .tab {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
