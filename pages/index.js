@@ -163,7 +163,7 @@ export default function Home() {
     <div className="page-container">
       <header className="header">
         <div className="header-content">
-          <h1 className="header-title">🎮 Steam Game DL</h1>
+          <h1 className="header-title">🎮 Epic Light </h1>
           <p className="header-subtitle">Find and download Steam games</p>
         </div>
       </header>
@@ -180,7 +180,7 @@ export default function Home() {
               className="search-input"
             />
             <button onClick={fetchGameData} disabled={loading} className="search-button">
-              {loading ? '🔄 Loading...' : '🔍 Get Game Info'}
+              {loading ? ' Loading...' : ' Get Game Info'}
             </button>
           </div>
           
@@ -193,7 +193,7 @@ export default function Home() {
           {/* Recent Searches */}
           {recentSearches.length > 0 && (
             <div className="recent-searches">
-              <p className="section-title">⏱️ Recent Searches</p>
+              <p className="section-title"> Recent Searches</p>
               <div className="recent-searches-list">
                 {recentSearches.map((search) => (
                   <button
@@ -211,7 +211,7 @@ export default function Home() {
 
           {/* Popular Games Quick Access */}
           <div className="popular-games">
-            <p className="section-title">🔥 Popular Games</p>
+            <p className="section-title"> Popular Games</p>
             <div className="popular-games-list">
               {popularGames.map((game) => (
                 <button
@@ -239,7 +239,7 @@ export default function Home() {
                 disabled={checkingDownload}
                 className="download-check-button"
               >
-                {checkingDownload ? '🔄 Checking...' : '📥 Check Download'}
+                {checkingDownload ? ' Checking...' : ' Check Download'}
               </button>
             </div>
             
@@ -298,7 +298,7 @@ export default function Home() {
 
             {/* Description */}
             <div className="game-description">
-              <h2>📝 Description</h2>
+              <h2> Description</h2>
               <div 
                 dangerouslySetInnerHTML={{ __html: gameData.detailed_description }} 
                 className="description-content"
