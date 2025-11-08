@@ -1,7 +1,4 @@
-import Head from 'next/head'
 import { useState, useEffect } from 'react'
-import Header from '@components/Header'
-import Footer from '@components/Footer'
 
 // API configuration (for display purposes only)
 const apiConfig = {
@@ -44,6 +41,13 @@ export default function Home() {
   const [error, setError] = useState('')
   const [downloadStatus, setDownloadStatus] = useState(null)
   const [checkingDownload, setCheckingDownload] = useState(false)
+  const [recentSearches, setRecentSearches] = useState([])
+
+  // Load recent searches from memory on mount
+  useEffect(() => {
+    const stored = window.recentSearches || []
+    setRecentSearches(stored)
+  }, [])
 
   // Clear error when user starts typing
   useEffect(() => {
@@ -58,6 +62,13 @@ export default function Home() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [gameData]);
+
+  const addToRecentSearches = (id, name) => {
+    const newSearch = { id, name, timestamp: Date.now() }
+    const updated = [newSearch, ...recentSearches.filter(s => s.id !== id)].slice(0, 5)
+    setRecentSearches(updated)
+    window.recentSearches = updated
+  }
 
   const fetchGameData = async () => {
     if (!gameId.trim()) {
@@ -82,6 +93,7 @@ export default function Home() {
       
       if (data.success) {
         setGameData(data.data)
+        addToRecentSearches(gameId, data.data.name)
       } else {
         setError(data.error || 'Failed to fetch game data. The game might not exist on Steam.')
         setGameData(null)
@@ -128,6 +140,11 @@ export default function Home() {
     }
   }
 
+  const handleRecentSearch = (id) => {
+    setGameId(id)
+    setTimeout(() => fetchGameData(), 100)
+  }
+
   // Popular Steam game IDs for reference
   const popularGames = [
     { id: '730', name: 'CS:GO' },
@@ -144,12 +161,12 @@ export default function Home() {
 
   return (
     <div className="page-container">
-      <Head>
-        <title>Steam Game Info Finder</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <Header title="Steam2" />
+      <header className="header">
+        <div className="header-content">
+          <h1 className="header-title">🎮 Steam Game DL</h1>
+          <p className="header-subtitle">Find and download Steam games</p>
+        </div>
+      </header>
       
       <main className="main-content">
         <div className="search-section">
@@ -162,19 +179,38 @@ export default function Home() {
               className="search-input"
             />
             <button type="submit" disabled={loading} className="search-button">
-              {loading ? 'Loading...' : 'Get Game Info'}
+              {loading ? '🔄 Loading...' : '🔍 Get Game Info'}
             </button>
           </form>
           
           {error && (
             <div className="error-message">
-              <strong>Error:</strong> {error}
+              <strong>⚠️ Error:</strong> {error}
+            </div>
+          )}
+
+          {/* Recent Searches */}
+          {recentSearches.length > 0 && (
+            <div className="recent-searches">
+              <p className="section-title">⏱️ Recent Searches</p>
+              <div className="recent-searches-list">
+                {recentSearches.map((search) => (
+                  <button
+                    key={search.id}
+                    onClick={() => handleRecentSearch(search.id)}
+                    className="recent-search-btn"
+                  >
+                    <span className="search-name">{search.name}</span>
+                    <span className="search-id">ID: {search.id}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
           {/* Popular Games Quick Access */}
           <div className="popular-games">
-            <p>Try these popular games:</p>
+            <p className="section-title">🔥 Popular Games</p>
             <div className="popular-games-list">
               {popularGames.map((game) => (
                 <button
@@ -185,7 +221,7 @@ export default function Home() {
                   }}
                   className="popular-game-btn"
                 >
-                  {game.name} ({game.id})
+                  {game.name} <span className="game-id-badge">{game.id}</span>
                 </button>
               ))}
             </div>
@@ -202,14 +238,14 @@ export default function Home() {
                 disabled={checkingDownload}
                 className="download-check-button"
               >
-                {checkingDownload ? 'Checking...' : 'Check Download'}
+                {checkingDownload ? '🔄 Checking...' : '📥 Check Download'}
               </button>
             </div>
             
             {/* Download Status */}
             {downloadStatus && (
               <div className="download-status">
-                <h3>Download Availability</h3>
+                <h3>📦 Download Availability</h3>
                 <div className="api-results">
                   {downloadStatus.map((result, index) => (
                     <div key={index} className={`api-result ${result.available ? 'available' : 'unavailable'}`}>
@@ -251,17 +287,17 @@ export default function Home() {
               )}
               
               <div className="game-basic-info">
-                <p><strong>Steam ID:</strong> {gameData.steam_appid}</p>
-                <p><strong>Release Date:</strong> {gameData.release_date?.date || 'N/A'}</p>
-                <p><strong>Developers:</strong> {gameData.developers?.join(', ') || 'N/A'}</p>
-                <p><strong>Publishers:</strong> {gameData.publishers?.join(', ') || 'N/A'}</p>
-                <p><strong>Price:</strong> {gameData.price_overview?.final_formatted || 'Free'}</p>
+                <p><strong>🆔 Steam ID:</strong> {gameData.steam_appid}</p>
+                <p><strong>📅 Release Date:</strong> {gameData.release_date?.date || 'N/A'}</p>
+                <p><strong>👨‍💻 Developers:</strong> {gameData.developers?.join(', ') || 'N/A'}</p>
+                <p><strong>🏢 Publishers:</strong> {gameData.publishers?.join(', ') || 'N/A'}</p>
+                <p><strong>💰 Price:</strong> {gameData.price_overview?.final_formatted || 'Free'}</p>
               </div>
             </div>
 
             {/* Description */}
             <div className="game-description">
-              <h2>Description</h2>
+              <h2>📝 Description</h2>
               <div 
                 dangerouslySetInnerHTML={{ __html: gameData.detailed_description }} 
                 className="description-content"
@@ -271,7 +307,7 @@ export default function Home() {
             {/* Media Showcase */}
             {gameData.media && (
               <div className="media-section">
-                <h2>Media</h2>
+                <h2>🎬 Media</h2>
                 
                 {/* Videos */}
                 {gameData.media.videos && gameData.media.videos.length > 0 && (
@@ -319,7 +355,7 @@ export default function Home() {
             {/* DLCs */}
             {gameData.dlcs && gameData.dlcs.length > 0 && (
               <div className="dlc-section">
-                <h2>Downloadable Content (DLC)</h2>
+                <h2>🎁 Downloadable Content (DLC)</h2>
                 <div className="dlc-grid">
                   {gameData.dlcs.map((dlc) => (
                     <div key={dlc.id} className="dlc-item">
@@ -334,17 +370,52 @@ export default function Home() {
         )}
       </main>
 
-      <Footer />
+      <footer className="footer">
+        <p>© 2024 Steam Game DL. Powered by Steam API.</p>
+      </footer>
 
       <style jsx>{`
-        /* Reset entire page layout */
+        * {
+          box-sizing: border-box;
+        }
+
         .page-container {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
+          background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+          color: #e0e0e0;
         }
 
-        /* Main content should grow and be scrollable */
+        .header {
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(10px);
+          border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+          padding: 2rem 1rem;
+          text-align: center;
+        }
+
+        .header-content {
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .header-title {
+          font-size: 3rem;
+          margin: 0;
+          background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          font-weight: 800;
+        }
+
+        .header-subtitle {
+          margin: 0.5rem 0 0 0;
+          color: #b0b0b0;
+          font-size: 1.1rem;
+        }
+
         .main-content {
           flex: 1;
           width: 100%;
@@ -356,7 +427,6 @@ export default function Home() {
 
         .search-section {
           margin: 2rem 0;
-          text-align: center;
         }
 
         .search-form {
@@ -369,90 +439,169 @@ export default function Home() {
         }
 
         .search-input {
-          padding: 0.75rem;
+          padding: 1rem;
           font-size: 1rem;
-          border: 2px solid #0070f3;
-          border-radius: 4px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 2px solid rgba(106, 90, 205, 0.5);
+          border-radius: 12px;
           min-width: 300px;
           max-width: 100%;
+          color: #fff;
+          transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-input:focus {
+          outline: none;
+          border-color: #667eea;
+          background: rgba(255, 255, 255, 0.15);
+          box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
         }
 
         .search-button, .download-check-button {
-          padding: 0.75rem 1.5rem;
+          padding: 1rem 2rem;
           font-size: 1rem;
-          background-color: #0070f3;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
           border: none;
-          border-radius: 4px;
+          border-radius: 12px;
           cursor: pointer;
-          transition: background-color 0.2s;
+          transition: all 0.3s ease;
           white-space: nowrap;
+          font-weight: 600;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .download-check-button {
-          background-color: #28a745;
+          background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+          box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+        }
+
+        .search-button:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
         .download-check-button:hover:not(:disabled) {
-          background-color: #218838;
-        }
-
-        .search-button:hover:not(:disabled),
-        .download-check-button:hover:not(:disabled) {
-          background-color: #0051a8;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(56, 239, 125, 0.6);
         }
 
         .search-button:disabled,
         .download-check-button:disabled {
-          background-color: #ccc;
+          background: #555;
           cursor: not-allowed;
+          box-shadow: none;
         }
 
         .error-message {
-          color: #ff0000;
-          margin: 1rem 0;
+          color: #ff6b6b;
+          margin: 1rem auto;
           font-weight: bold;
           padding: 1rem;
-          background: #ffe6e6;
-          border: 1px solid #ff0000;
-          border-radius: 4px;
+          background: rgba(255, 107, 107, 0.1);
+          border: 2px solid rgba(255, 107, 107, 0.3);
+          border-radius: 12px;
           max-width: 600px;
-          margin-left: auto;
-          margin-right: auto;
+          backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+          margin-bottom: 1rem;
+          font-weight: bold;
+          font-size: 1.1rem;
+          color: #b0b0b0;
+        }
+
+        .recent-searches {
+          margin: 2rem 0;
+          padding: 1.5rem;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 16px;
+          border: 1px solid rgba(106, 90, 205, 0.3);
+          backdrop-filter: blur(10px);
+        }
+
+        .recent-searches-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .recent-search-btn {
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(106, 90, 205, 0.3);
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: #e0e0e0;
+        }
+
+        .recent-search-btn:hover {
+          background: rgba(102, 126, 234, 0.2);
+          border-color: #667eea;
+          transform: translateX(5px);
+        }
+
+        .search-name {
+          font-weight: 600;
+        }
+
+        .search-id {
+          font-size: 0.9rem;
+          color: #b0b0b0;
+          background: rgba(0, 0, 0, 0.3);
+          padding: 0.25rem 0.75rem;
+          border-radius: 8px;
         }
 
         .popular-games {
           margin: 2rem 0;
-          padding: 1rem;
-          background: #f5f5f5;
-          border-radius: 8px;
-        }
-
-        .popular-games p {
-          margin-bottom: 0.5rem;
-          font-weight: bold;
+          padding: 1.5rem;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 16px;
+          border: 1px solid rgba(106, 90, 205, 0.3);
+          backdrop-filter: blur(10px);
         }
 
         .popular-games-list {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.5rem;
-          justify-content: center;
+          gap: 0.75rem;
         }
 
         .popular-game-btn {
-          padding: 0.5rem 1rem;
-          background: #6c757d;
-          color: white;
-          border: none;
-          border-radius: 4px;
+          padding: 0.75rem 1.25rem;
+          background: rgba(255, 255, 255, 0.08);
+          color: #e0e0e0;
+          border: 1px solid rgba(106, 90, 205, 0.3);
+          border-radius: 10px;
           cursor: pointer;
-          font-size: 0.9rem;
-          transition: background-color 0.2s;
+          font-size: 0.95rem;
+          transition: all 0.3s ease;
+          font-weight: 500;
         }
 
         .popular-game-btn:hover {
-          background: #545b62;
+          background: rgba(102, 126, 234, 0.3);
+          border-color: #667eea;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .game-id-badge {
+          background: rgba(0, 0, 0, 0.4);
+          padding: 0.25rem 0.5rem;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          margin-left: 0.5rem;
         }
 
         .game-info {
@@ -471,18 +620,24 @@ export default function Home() {
 
         .game-title {
           font-size: 2.5rem;
-          color: #333;
+          color: #fff;
           margin: 0;
           word-wrap: break-word;
+          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
-        /* Rest of your existing styles */
         .download-status {
           margin: 2rem 0;
           padding: 1.5rem;
-          background: #f8f9fa;
-          border-radius: 8px;
-          border: 1px solid #dee2e6;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 16px;
+          border: 1px solid rgba(106, 90, 205, 0.3);
+          backdrop-filter: blur(10px);
+        }
+
+        .download-status h3 {
+          margin-top: 0;
+          color: #fff;
         }
 
         .api-results {
@@ -496,49 +651,54 @@ export default function Home() {
           justify-content: space-between;
           align-items: center;
           padding: 1rem;
-          border-radius: 6px;
+          border-radius: 12px;
           border-left: 4px solid;
+          transition: all 0.3s ease;
         }
 
         .api-result.available {
-          background: #d4edda;
-          border-left-color: #28a745;
+          background: rgba(56, 239, 125, 0.1);
+          border-left-color: #38ef7d;
         }
 
         .api-result.unavailable {
-          background: #f8d7da;
-          border-left-color: #dc3545;
+          background: rgba(255, 107, 107, 0.1);
+          border-left-color: #ff6b6b;
         }
 
         .api-name {
           font-weight: bold;
           font-size: 1.1rem;
+          color: #fff;
         }
 
         .download-link {
           margin-left: 1rem;
-          padding: 0.25rem 0.75rem;
-          background: #007bff;
+          padding: 0.5rem 1rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
           border: none;
-          border-radius: 4px;
+          border-radius: 8px;
           cursor: pointer;
           font-size: 0.9rem;
+          font-weight: 600;
+          transition: all 0.3s ease;
         }
 
         .download-link:hover {
-          background: #0056b3;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
         }
 
         .status-available {
-          color: #155724;
+          color: #38ef7d;
           display: flex;
           align-items: center;
           gap: 0.5rem;
         }
 
         .status-unavailable {
-          color: #721c24;
+          color: #ff6b6b;
         }
 
         .game-header {
@@ -550,8 +710,8 @@ export default function Home() {
 
         .game-header-image {
           width: 100%;
-          border-radius: 8px;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
         .game-basic-info {
@@ -559,44 +719,67 @@ export default function Home() {
           flex-direction: column;
           gap: 1rem;
           font-size: 1.1rem;
+          background: rgba(0, 0, 0, 0.3);
+          padding: 1.5rem;
+          border-radius: 16px;
+          border: 1px solid rgba(106, 90, 205, 0.3);
+        }
+
+        .game-basic-info p {
+          margin: 0;
+          line-height: 1.6;
+        }
+
+        .game-basic-info strong {
+          color: #b0b0b0;
         }
 
         .game-description {
           margin: 2rem 0;
           padding: 1.5rem;
-          background: #f5f5f5;
-          border-radius: 8px;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 16px;
+          border: 1px solid rgba(106, 90, 205, 0.3);
+        }
+
+        .game-description h2 {
+          color: #fff;
+          margin-top: 0;
         }
 
         .description-content {
-          line-height: 1.6;
+          line-height: 1.8;
           overflow-wrap: break-word;
-        }
-
-        .description-content :global(img) {
-          max-width: 100%;
-          height: auto;
+          color: #d0d0d0;
         }
 
         .media-section {
           margin: 2rem 0;
         }
 
+        .media-section h2, .media-section h3 {
+          color: #fff;
+        }
+
         .videos-grid, .screenshots-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 1rem;
+          gap: 1.5rem;
           margin-top: 1rem;
         }
 
         .game-video, .screenshot {
           width: 100%;
-          border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          border-radius: 12px;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
         }
 
         .dlc-section {
           margin: 2rem 0;
+        }
+
+        .dlc-section h2 {
+          color: #fff;
         }
 
         .dlc-grid {
@@ -607,13 +790,47 @@ export default function Home() {
         }
 
         .dlc-item {
-          padding: 1rem;
-          background: #f9f9f9;
-          border-radius: 8px;
-          border: 1px solid #ddd;
+          padding: 1.5rem;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 12px;
+          border: 1px solid rgba(106, 90, 205, 0.3);
+          transition: all 0.3s ease;
+        }
+
+        .dlc-item:hover {
+          border-color: #667eea;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .dlc-item h4 {
+          color: #fff;
+          margin-top: 0;
+        }
+
+        .dlc-item p {
+          color: #b0b0b0;
+          margin-bottom: 0;
+        }
+
+        .footer {
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(10px);
+          border-top: 2px solid rgba(106, 90, 205, 0.3);
+          padding: 2rem 1rem;
+          text-align: center;
+          color: #b0b0b0;
+        }
+
+        .footer p {
+          margin: 0;
         }
 
         @media (max-width: 768px) {
+          .header-title {
+            font-size: 2rem;
+          }
+
           .main-content {
             padding: 0 0.5rem;
           }
@@ -645,24 +862,12 @@ export default function Home() {
           .game-title {
             font-size: 2rem;
           }
-        }
 
-        /* Global reset for full page scrolling */
-        :global(html) {
-          height: 100%;
-        }
-
-        :global(body) {
-          height: 100%;
-          margin: 0;
-          padding: 0;
-          overflow-y: auto;
-        }
-
-        :global(#__next) {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
+          .recent-search-btn {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+          }
         }
       `}</style>
     </div>
