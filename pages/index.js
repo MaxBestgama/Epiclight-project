@@ -149,7 +149,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header title="Steam Game Information Finder" />
+      <Header title="Steam Game DL" />
       
       <main className="main-content">
         <div className="search-section">
