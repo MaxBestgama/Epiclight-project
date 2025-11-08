@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Search, Download, Clock, Star, Trash2, ExternalLink, Info, Calendar, DollarSign, Users, Tag } from 'lucide-react';
+import Head from 'next/head'
+import { useState, useEffect } from 'react'
+import Header from '@components/Header'
+import Footer from '@components/Footer'
 
 const apiConfig = {
   "api_list": [
