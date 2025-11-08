@@ -170,18 +170,19 @@ export default function Home() {
       
       <main className="main-content">
         <div className="search-section">
-          <form onSubmit={handleSubmit} className="search-form">
+          <div className="search-form">
             <input
               type="text"
               value={gameId}
               onChange={(e) => setGameId(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && fetchGameData()}
               placeholder="Enter Steam Game ID (e.g., 730 for CS:GO)"
               className="search-input"
             />
-            <button type="submit" disabled={loading} className="search-button">
+            <button onClick={fetchGameData} disabled={loading} className="search-button">
               {loading ? '🔄 Loading...' : '🔍 Get Game Info'}
             </button>
-          </form>
+          </div>
           
           {error && (
             <div className="error-message">
