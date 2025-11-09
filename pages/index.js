@@ -1,40 +1,6 @@
 import { useState, useEffect } from 'react'
 
-// API configuration (for display purposes only)
-const apiConfig = {
-  "api_list": [
-    {
-      "name": "TwentyTwo Cloud",
-      "url": "http://masss.pythonanywhere.com/storage?auth=IEOIJE54esfsipoE56GE4&appid=<appid>",
-      "success_code": 200,
-      "unavailable_code": 404,
-      "enabled": true
-    },
-    {
-      "name": "Sadie",
-      "url": "https://mellyiscoolaf.pythonanywhere.com/m/<appid>",
-      "success_code": 200,
-      "unavailable_code": 404,
-      "enabled": true
-    },
-    {
-      "name": "Ryuu",
-      "url": "https://mellyiscoolaf.pythonanywhere.com/<appid>",
-      "success_code": 200,
-      "unavailable_code": 404,
-      "enabled": true
-    },
-    {
-      "name": "Sushi",
-      "url": "https://raw.githubusercontent.com/sushi-dev55/sushitools-games-repo/refs/heads/main/<appid>.zip",
-      "success_code": 200,
-      "unavailable_code": 404,
-      "enabled": true
-    }
-  ]
-}
-
-export default function Home() {
+export default function SteamGameFinder() {
   const [gameId, setGameId] = useState('')
   const [gameData, setGameData] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -42,21 +8,19 @@ export default function Home() {
   const [downloadStatus, setDownloadStatus] = useState(null)
   const [checkingDownload, setCheckingDownload] = useState(false)
   const [recentSearches, setRecentSearches] = useState([])
+  const [activeTab, setActiveTab] = useState('about')
 
-  // Load recent searches from memory on mount
   useEffect(() => {
     const stored = window.recentSearches || []
     setRecentSearches(stored)
   }, [])
 
-  // Clear error when user starts typing
   useEffect(() => {
     if (error && gameId) {
       setError('')
     }
   }, [gameId, error])
 
-  // Scroll to top when game data loads
   useEffect(() => {
     if (gameData) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -76,7 +40,6 @@ export default function Home() {
       return
     }
 
-    // Validate numeric ID
     if (isNaN(gameId)) {
       setError('Game ID must be a number')
       return
@@ -129,11 +92,6 @@ export default function Home() {
     }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    fetchGameData()
-  }
-
   const handleDownload = (downloadUrl) => {
     if (downloadUrl) {
       window.open(downloadUrl, '_blank')
@@ -145,729 +103,774 @@ export default function Home() {
     setTimeout(() => fetchGameData(), 100)
   }
 
-  // Popular Steam game IDs for reference
   const popularGames = [
-    { id: '730', name: 'CS:GO' },
+    { id: '730', name: 'Counter-Strike 2' },
     { id: '570', name: 'Dota 2' },
     { id: '440', name: 'Team Fortress 2' },
     { id: '620', name: 'Portal 2' },
-    { id: '400', name: 'Portal' },
-    { id: '220', name: 'Half-Life 2' },
-    { id: '10', name: 'Counter-Strike' },
-    { id: '80', name: 'Counter-Strike: Condition Zero' },
-    { id: '240', name: 'Counter-Strike: Source' },
-    { id: '500', name: 'Left 4 Dead' }
+    { id: '271590', name: 'Grand Theft Auto V' },
+    { id: '292030', name: 'The Witcher 3' },
+    { id: '1091500', name: 'Cyberpunk 2077' },
+    { id: '1172470', name: 'Apex Legends' }
   ]
 
   return (
-    <div className="page-container">
-      <header className="header">
-        <div className="header-content">
-          <h1 className="header-title">🎮 Epic Light </h1>
-          <p className="header-subtitle">Find and download Steam games</p>
+    <div className="steam-page">
+      {/* Steam Header */}
+      <header className="steam-header">
+        <div className="steam-nav">
+          <div className="nav-logo">STEAM</div>
+          <div className="nav-links">
+            <a href="#" className="nav-link">STORE</a>
+            <a href="#" className="nav-link">COMMUNITY</a>
+            <a href="#" className="nav-link active">LIBRARY</a>
+          </div>
+          <div className="nav-user">
+            <span className="user-name">Epic Light Finder</span>
+          </div>
         </div>
       </header>
-      
-      <main className="main-content">
-        <div className="search-section">
-          <div className="search-form">
-            <input
-              type="text"
-              value={gameId}
-              onChange={(e) => setGameId(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && fetchGameData()}
-              placeholder="Enter Steam Game ID (e.g., 730 for CS:GO)"
-              className="search-input"
-            />
-            <button onClick={fetchGameData} disabled={loading} className="search-button">
-              {loading ? ' Loading...' : ' Get Game Info'}
-            </button>
-          </div>
-          
-          {error && (
-            <div className="error-message">
-              <strong>⚠️ Error:</strong> {error}
-            </div>
-          )}
 
-          {/* Recent Searches */}
+      {/* Search Bar Area */}
+      <div className="search-container">
+        <div className="search-wrapper">
+          <input
+            type="text"
+            value={gameId}
+            onChange={(e) => setGameId(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && fetchGameData()}
+            placeholder="Enter Steam App ID (e.g., 730 for CS2)"
+            className="steam-search-input"
+          />
+          <button onClick={fetchGameData} disabled={loading} className="steam-search-btn">
+            {loading ? 'Searching...' : 'Search'}
+          </button>
+        </div>
+        
+        {error && (
+          <div className="steam-error">
+            {error}
+          </div>
+        )}
+      </div>
+
+      {/* Recent & Popular Games */}
+      {!gameData && (
+        <div className="browse-section">
           {recentSearches.length > 0 && (
-            <div className="recent-searches">
-              <p className="section-title"> Recent Searches</p>
-              <div className="recent-searches-list">
+            <div className="steam-section">
+              <h2 className="section-title">RECENT SEARCHES</h2>
+              <div className="games-grid">
                 {recentSearches.map((search) => (
-                  <button
+                  <div
                     key={search.id}
                     onClick={() => handleRecentSearch(search.id)}
-                    className="recent-search-btn"
+                    className="game-card"
                   >
-                    <span className="search-name">{search.name}</span>
-                    <span className="search-id">ID: {search.id}</span>
-                  </button>
+                    <div className="game-card-content">
+                      <div className="game-card-title">{search.name}</div>
+                      <div className="game-card-id">App ID: {search.id}</div>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Popular Games Quick Access */}
-          <div className="popular-games">
-            <p className="section-title"> Popular Games</p>
-            <div className="popular-games-list">
+          <div className="steam-section">
+            <h2 className="section-title">POPULAR GAMES</h2>
+            <div className="games-grid">
               {popularGames.map((game) => (
-                <button
+                <div
                   key={game.id}
                   onClick={() => {
                     setGameId(game.id)
                     setTimeout(() => fetchGameData(), 100)
                   }}
-                  className="popular-game-btn"
+                  className="game-card"
                 >
-                  {game.name} <span className="game-id-badge">{game.id}</span>
-                </button>
+                  <div className="game-card-content">
+                    <div className="game-card-title">{game.name}</div>
+                    <div className="game-card-id">App ID: {game.id}</div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </div>
+      )}
 
-        {gameData && (
-          <div className="game-info">
-            {/* Title and Download Button */}
-            <div className="game-title-section">
-              <h1 className="game-title">{gameData.name}</h1>
-              <button 
-                onClick={checkDownloadAvailability}
-                disabled={checkingDownload}
-                className="download-check-button"
-              >
-                {checkingDownload ? ' Checking...' : ' Check Download'}
-              </button>
+      {/* Game Page */}
+      {gameData && (
+        <div className="game-page">
+          {/* Game Header with Image */}
+          <div className="game-hero">
+            {gameData.header_image && (
+              <img 
+                src={gameData.header_image} 
+                alt={gameData.name}
+                className="game-hero-img"
+              />
+            )}
+            <div className="game-hero-overlay">
+              <h1 className="game-hero-title">{gameData.name}</h1>
             </div>
-            
-            {/* Download Status */}
-            {downloadStatus && (
-              <div className="download-status">
-                <h3>📦 Download Availability</h3>
-                <div className="api-results">
-                  {downloadStatus.map((result, index) => (
-                    <div key={index} className={`api-result ${result.available ? 'available' : 'unavailable'}`}>
-                      <div className="api-name">{result.name}</div>
-                      <div className="api-status">
-                        {result.available ? (
-                          <span className="status-available">
-                            ✅ Available 
-                            <button 
-                              onClick={() => handleDownload(result.directUrl)}
-                              className="download-link"
-                            >
-                              Download
-                            </button>
-                          </span>
-                        ) : (
-                          <span className="status-unavailable">
-                            ❌ {result.error || `Unavailable (Status: ${result.status})`}
-                          </span>
-                        )}
+          </div>
+
+          {/* Game Content Area */}
+          <div className="game-content">
+            {/* Left Column */}
+            <div className="game-main">
+              {/* Screenshots/Media */}
+              {gameData.media && (
+                <div className="media-showcase">
+                  {gameData.media.screenshots && gameData.media.screenshots.length > 0 && (
+                    <div className="screenshots">
+                      <img 
+                        src={gameData.media.screenshots[0].path_full} 
+                        alt="Screenshot"
+                        className="featured-screenshot"
+                      />
+                      <div className="screenshot-thumbs">
+                        {gameData.media.screenshots.slice(0, 4).map((screenshot, index) => (
+                          <img 
+                            key={index}
+                            src={screenshot.path_thumbnail || screenshot.path_full} 
+                            alt={`Thumb ${index + 1}`}
+                            className="screenshot-thumb"
+                          />
+                        ))}
                       </div>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-            )}
-
-            {/* Header with Picture and Basic Info */}
-            <div className="game-header">
-              {gameData.header_image && (
-                <img 
-                  src={gameData.header_image} 
-                  alt={gameData.name}
-                  className="game-header-image"
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                  }}
-                />
               )}
-              
-              <div className="game-basic-info">
-                <p><strong>🆔 Steam ID:</strong> {gameData.steam_appid}</p>
-                <p><strong>📅 Release Date:</strong> {gameData.release_date?.date || 'N/A'}</p>
-                <p><strong>👨‍💻 Developers:</strong> {gameData.developers?.join(', ') || 'N/A'}</p>
-                <p><strong>🏢 Publishers:</strong> {gameData.publishers?.join(', ') || 'N/A'}</p>
-                <p><strong>💰 Price:</strong> {gameData.price_overview?.final_formatted || 'Free'}</p>
-              </div>
-            </div>
 
-            {/* Description */}
-            <div className="game-description">
-              <h2> Description</h2>
-              <div 
-                dangerouslySetInnerHTML={{ __html: gameData.detailed_description }} 
-                className="description-content"
-              />
-            </div>
-
-            {/* Media Showcase */}
-            {gameData.media && (
-              <div className="media-section">
-                <h2>🎬 Media</h2>
-                
-                {/* Videos */}
-                {gameData.media.videos && gameData.media.videos.length > 0 && (
-                  <div className="videos-section">
-                    <h3>Videos</h3>
-                    <div className="videos-grid">
-                      {gameData.media.videos.map((video, index) => (
-                        <div key={index} className="video-item">
-                          <video 
-                            controls 
-                            poster={video.thumbnail}
-                            className="game-video"
-                          >
-                            <source src={video.webm?.max || video.mp4?.max} type="video/mp4" />
-                            Your browser does not support the video tag.
-                          </video>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Screenshots */}
-                {gameData.media.screenshots && gameData.media.screenshots.length > 0 && (
-                  <div className="screenshots-section">
-                    <h3>Screenshots</h3>
-                    <div className="screenshots-grid">
-                      {gameData.media.screenshots.map((screenshot, index) => (
-                        <img 
-                          key={index}
-                          src={screenshot.path_full} 
-                          alt={`Screenshot ${index + 1}`}
-                          className="screenshot"
-                          onError={(e) => {
-                            e.target.style.display = 'none'
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* DLCs */}
-            {gameData.dlcs && gameData.dlcs.length > 0 && (
-              <div className="dlc-section">
-                <h2>🎁 Downloadable Content (DLC)</h2>
-                <div className="dlc-grid">
-                  {gameData.dlcs.map((dlc) => (
-                    <div key={dlc.id} className="dlc-item">
-                      <h4>{dlc.name}</h4>
-                      <p><strong>DLC ID:</strong> {dlc.id}</p>
-                    </div>
-                  ))}
+              {/* Tabs */}
+              <div className="game-tabs">
+                <div 
+                  className={`tab ${activeTab === 'about' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('about')}
+                >
+                  About This Game
+                </div>
+                <div 
+                  className={`tab ${activeTab === 'download' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('download')}
+                >
+                  Download
                 </div>
               </div>
-            )}
-          </div>
-        )}
-      </main>
 
-      <footer className="footer">
-        <p>© 2024 Steam Game DL. Powered by Steam API.</p>
-      </footer>
+              {/* Tab Content */}
+              <div className="tab-content">
+                {activeTab === 'about' && (
+                  <div className="about-content">
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: gameData.detailed_description }} 
+                      className="game-description"
+                    />
+                    
+                    {gameData.dlcs && gameData.dlcs.length > 0 && (
+                      <div className="dlc-section">
+                        <h3>Downloadable Content For This Game</h3>
+                        <div className="dlc-list">
+                          {gameData.dlcs.slice(0, 5).map((dlc) => (
+                            <div key={dlc.id} className="dlc-item">
+                              {dlc.name}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'download' && (
+                  <div className="download-content">
+                    {!downloadStatus && (
+                      <button 
+                        onClick={checkDownloadAvailability}
+                        disabled={checkingDownload}
+                        className="check-download-btn"
+                      >
+                        {checkingDownload ? 'Checking Availability...' : 'Check Download Options'}
+                      </button>
+                    )}
+
+                    {downloadStatus && (
+                      <div className="download-results">
+                        {downloadStatus.map((result, index) => (
+                          <div key={index} className={`download-option ${result.available ? 'available' : 'unavailable'}`}>
+                            <div className="download-source">{result.name}</div>
+                            <div className="download-status-text">
+                              {result.available ? (
+                                <button 
+                                  onClick={() => handleDownload(result.directUrl)}
+                                  className="download-btn"
+                                >
+                                  Download Now
+                                </button>
+                              ) : (
+                                <span className="unavailable-text">Not Available</span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Sidebar */}
+            <div className="game-sidebar">
+              {/* Purchase Box */}
+              <div className="purchase-box">
+                <div className="purchase-header">
+                  <span className="purchase-title">Buy {gameData.name}</span>
+                </div>
+                <div className="purchase-price">
+                  {gameData.price_overview?.final_formatted || 'Free To Play'}
+                </div>
+                <button className="add-to-cart-btn">
+                  Add to Cart
+                </button>
+              </div>
+
+              {/* Game Details */}
+              <div className="game-details">
+                <div className="detail-row">
+                  <span className="detail-label">Developer:</span>
+                  <span className="detail-value">{gameData.developers?.join(', ') || 'N/A'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Publisher:</span>
+                  <span className="detail-value">{gameData.publishers?.join(', ') || 'N/A'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Release Date:</span>
+                  <span className="detail-value">{gameData.release_date?.date || 'N/A'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">App ID:</span>
+                  <span className="detail-value">{gameData.steam_appid}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         * {
           box-sizing: border-box;
-        }
-
-        .page-container {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-          color: #e0e0e0;
-        }
-
-        .header {
-          background: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(10px);
-          border-bottom: 2px solid rgba(106, 90, 205, 0.3);
-          padding: 2rem 1rem;
-          text-align: center;
-        }
-
-        .header-content {
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .header-title {
-          font-size: 3rem;
           margin: 0;
-          background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          font-weight: 800;
+          padding: 0;
         }
 
-        .header-subtitle {
-          margin: 0.5rem 0 0 0;
-          color: #b0b0b0;
-          font-size: 1.1rem;
+        .steam-page {
+          min-height: 100vh;
+          background: linear-gradient(to bottom, #1b2838 0%, #2a475e 100%);
+          font-family: "Motiva Sans", Arial, sans-serif;
+          color: #c7d5e0;
         }
 
-        .main-content {
-          flex: 1;
-          width: 100%;
+        /* Header */
+        .steam-header {
+          background: #171a21;
+          border-bottom: 1px solid #000;
+        }
+
+        .steam-nav {
           max-width: 1200px;
           margin: 0 auto;
-          padding: 0 1rem;
-          overflow: visible;
-        }
-
-        .search-section {
-          margin: 2rem 0;
-        }
-
-        .search-form {
           display: flex;
-          gap: 1rem;
-          justify-content: center;
           align-items: center;
-          flex-wrap: wrap;
-          margin-bottom: 2rem;
+          padding: 0 20px;
+          height: 60px;
         }
 
-        .search-input {
-          padding: 1rem;
-          font-size: 1rem;
-          background: rgba(255, 255, 255, 0.1);
-          border: 2px solid rgba(106, 90, 205, 0.5);
-          border-radius: 12px;
-          min-width: 300px;
-          max-width: 100%;
-          color: #fff;
-          transition: all 0.3s ease;
-        }
-
-        .search-input::placeholder {
-          color: rgba(255, 255, 255, 0.5);
-        }
-
-        .search-input:focus {
-          outline: none;
-          border-color: #667eea;
-          background: rgba(255, 255, 255, 0.15);
-          box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .search-button, .download-check-button {
-          padding: 1rem 2rem;
-          font-size: 1rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 12px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          white-space: nowrap;
-          font-weight: 600;
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .download-check-button {
-          background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-          box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
-        }
-
-        .search-button:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .download-check-button:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(56, 239, 125, 0.6);
-        }
-
-        .search-button:disabled,
-        .download-check-button:disabled {
-          background: #555;
-          cursor: not-allowed;
-          box-shadow: none;
-        }
-
-        .error-message {
-          color: #ff6b6b;
-          margin: 1rem auto;
+        .nav-logo {
+          font-size: 24px;
           font-weight: bold;
-          padding: 1rem;
-          background: rgba(255, 107, 107, 0.1);
-          border: 2px solid rgba(255, 107, 107, 0.3);
-          border-radius: 12px;
-          max-width: 600px;
-          backdrop-filter: blur(10px);
+          color: #fff;
+          margin-right: 40px;
+          letter-spacing: 2px;
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 25px;
+          flex: 1;
+        }
+
+        .nav-link {
+          color: #b8b6b4;
+          text-decoration: none;
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          transition: color 0.2s;
+          cursor: pointer;
+        }
+
+        .nav-link:hover {
+          color: #fff;
+        }
+
+        .nav-link.active {
+          color: #fff;
+        }
+
+        .nav-user {
+          color: #b8b6b4;
+          font-size: 13px;
+        }
+
+        .user-name {
+          color: #66c0f4;
+        }
+
+        /* Search Container */
+        .search-container {
+          max-width: 940px;
+          margin: 40px auto;
+          padding: 0 20px;
+        }
+
+        .search-wrapper {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 15px;
+        }
+
+        .steam-search-input {
+          flex: 1;
+          background: #316282;
+          border: none;
+          padding: 12px 15px;
+          color: #fff;
+          font-size: 14px;
+          border-radius: 3px;
+        }
+
+        .steam-search-input::placeholder {
+          color: #7193a6;
+        }
+
+        .steam-search-input:focus {
+          outline: none;
+          background: #3d7fa3;
+        }
+
+        .steam-search-btn {
+          background: linear-gradient(to bottom, #75b022 5%, #588a1b 95%);
+          border: none;
+          color: #fff;
+          padding: 12px 30px;
+          font-size: 14px;
+          font-weight: 600;
+          border-radius: 3px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .steam-search-btn:hover:not(:disabled) {
+          background: linear-gradient(to bottom, #8bc53f 5%, #75b022 95%);
+        }
+
+        .steam-search-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .steam-error {
+          background: #5c2626;
+          border: 1px solid #8b4242;
+          padding: 12px 15px;
+          border-radius: 3px;
+          color: #f4a3a3;
+          font-size: 13px;
+        }
+
+        /* Browse Section */
+        .browse-section {
+          max-width: 940px;
+          margin: 0 auto;
+          padding: 0 20px 40px;
+        }
+
+        .steam-section {
+          margin-bottom: 40px;
         }
 
         .section-title {
-          margin-bottom: 1rem;
-          font-weight: bold;
-          font-size: 1.1rem;
-          color: #b0b0b0;
+          font-size: 14px;
+          color: #fff;
+          font-weight: 300;
+          text-transform: uppercase;
+          margin-bottom: 15px;
+          letter-spacing: 2px;
         }
 
-        .recent-searches {
-          margin: 2rem 0;
-          padding: 1.5rem;
-          background: rgba(0, 0, 0, 0.3);
-          border-radius: 16px;
-          border: 1px solid rgba(106, 90, 205, 0.3);
-          backdrop-filter: blur(10px);
+        .games-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 15px;
         }
 
-        .recent-searches-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .recent-search-btn {
-          padding: 1rem;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(106, 90, 205, 0.3);
-          border-radius: 12px;
+        .game-card {
+          background: linear-gradient(to bottom, #2a475e 0%, #1f3344 100%);
+          padding: 15px;
+          border-radius: 3px;
           cursor: pointer;
-          transition: all 0.3s ease;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          color: #e0e0e0;
+          transition: all 0.2s;
+          border: 1px solid transparent;
         }
 
-        .recent-search-btn:hover {
-          background: rgba(102, 126, 234, 0.2);
-          border-color: #667eea;
-          transform: translateX(5px);
+        .game-card:hover {
+          background: linear-gradient(to bottom, #3d5a6f 0%, #2a475e 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
 
-        .search-name {
-          font-weight: 600;
-        }
-
-        .search-id {
-          font-size: 0.9rem;
-          color: #b0b0b0;
-          background: rgba(0, 0, 0, 0.3);
-          padding: 0.25rem 0.75rem;
-          border-radius: 8px;
-        }
-
-        .popular-games {
-          margin: 2rem 0;
-          padding: 1.5rem;
-          background: rgba(0, 0, 0, 0.3);
-          border-radius: 16px;
-          border: 1px solid rgba(106, 90, 205, 0.3);
-          backdrop-filter: blur(10px);
-        }
-
-        .popular-games-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.75rem;
-        }
-
-        .popular-game-btn {
-          padding: 0.75rem 1.25rem;
-          background: rgba(255, 255, 255, 0.08);
-          color: #e0e0e0;
-          border: 1px solid rgba(106, 90, 205, 0.3);
-          border-radius: 10px;
-          cursor: pointer;
-          font-size: 0.95rem;
-          transition: all 0.3s ease;
+        .game-card-title {
+          color: #fff;
+          font-size: 14px;
+          margin-bottom: 5px;
           font-weight: 500;
         }
 
-        .popular-game-btn:hover {
-          background: rgba(102, 126, 234, 0.3);
-          border-color: #667eea;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        .game-card-id {
+          color: #66c0f4;
+          font-size: 12px;
         }
 
-        .game-id-badge {
-          background: rgba(0, 0, 0, 0.4);
-          padding: 0.25rem 0.5rem;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          margin-left: 0.5rem;
+        /* Game Page */
+        .game-page {
+          max-width: 100%;
         }
 
-        .game-info {
+        .game-hero {
+          position: relative;
           width: 100%;
-          padding: 2rem 0;
+          height: 400px;
+          overflow: hidden;
         }
 
-        .game-title-section {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
-          flex-wrap: wrap;
-          gap: 1rem;
+        .game-hero-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
-        .game-title {
-          font-size: 2.5rem;
+        .game-hero-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+          padding: 40px;
+        }
+
+        .game-hero-title {
           color: #fff;
-          margin: 0;
-          word-wrap: break-word;
-          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+          font-size: 36px;
+          font-weight: 300;
+          max-width: 940px;
+          margin: 0 auto;
         }
 
-        .download-status {
-          margin: 2rem 0;
-          padding: 1.5rem;
-          background: rgba(0, 0, 0, 0.3);
-          border-radius: 16px;
-          border: 1px solid rgba(106, 90, 205, 0.3);
-          backdrop-filter: blur(10px);
-        }
-
-        .download-status h3 {
-          margin-top: 0;
-          color: #fff;
-        }
-
-        .api-results {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .api-result {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1rem;
-          border-radius: 12px;
-          border-left: 4px solid;
-          transition: all 0.3s ease;
-        }
-
-        .api-result.available {
-          background: rgba(56, 239, 125, 0.1);
-          border-left-color: #38ef7d;
-        }
-
-        .api-result.unavailable {
-          background: rgba(255, 107, 107, 0.1);
-          border-left-color: #ff6b6b;
-        }
-
-        .api-name {
-          font-weight: bold;
-          font-size: 1.1rem;
-          color: #fff;
-        }
-
-        .download-link {
-          margin-left: 1rem;
-          padding: 0.5rem 1rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.9rem;
-          font-weight: 600;
-          transition: all 0.3s ease;
-        }
-
-        .download-link:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
-        }
-
-        .status-available {
-          color: #38ef7d;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .status-unavailable {
-          color: #ff6b6b;
-        }
-
-        .game-header {
+        .game-content {
+          max-width: 940px;
+          margin: 0 auto;
+          padding: 20px;
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
-          margin-bottom: 2rem;
+          grid-template-columns: 1fr 320px;
+          gap: 20px;
         }
 
-        .game-header-image {
+        .game-main {
+          background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Media Showcase */
+        .media-showcase {
+          margin-bottom: 20px;
+        }
+
+        .featured-screenshot {
           width: 100%;
-          border-radius: 16px;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+          height: auto;
+          display: block;
+          margin-bottom: 10px;
         }
 
-        .game-basic-info {
+        .screenshot-thumbs {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+        }
+
+        .screenshot-thumb {
+          width: 100%;
+          height: 80px;
+          object-fit: cover;
+          cursor: pointer;
+          opacity: 0.7;
+          transition: opacity 0.2s;
+        }
+
+        .screenshot-thumb:hover {
+          opacity: 1;
+        }
+
+        /* Tabs */
+        .game-tabs {
           display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          font-size: 1.1rem;
-          background: rgba(0, 0, 0, 0.3);
-          padding: 1.5rem;
-          border-radius: 16px;
-          border: 1px solid rgba(106, 90, 205, 0.3);
+          background: #1b2838;
+          border-bottom: 1px solid #000;
         }
 
-        .game-basic-info p {
-          margin: 0;
-          line-height: 1.6;
+        .tab {
+          padding: 15px 25px;
+          color: #8f98a0;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.2s;
+          border-bottom: 2px solid transparent;
         }
 
-        .game-basic-info strong {
-          color: #b0b0b0;
+        .tab:hover {
+          color: #fff;
+        }
+
+        .tab.active {
+          color: #fff;
+          background: rgba(103, 193, 245, 0.2);
+          border-bottom-color: #66c0f4;
+        }
+
+        /* Tab Content */
+        .tab-content {
+          background: #0e1419;
+          padding: 25px;
         }
 
         .game-description {
-          margin: 2rem 0;
-          padding: 1.5rem;
-          background: rgba(0, 0, 0, 0.3);
-          border-radius: 16px;
-          border: 1px solid rgba(106, 90, 205, 0.3);
-        }
-
-        .game-description h2 {
-          color: #fff;
-          margin-top: 0;
-        }
-
-        .description-content {
+          color: #acb2b8;
           line-height: 1.8;
-          overflow-wrap: break-word;
-          color: #d0d0d0;
+          font-size: 14px;
         }
 
-        .media-section {
-          margin: 2rem 0;
-        }
-
-        .media-section h2, .media-section h3 {
+        .game-description h1, .game-description h2 {
           color: #fff;
-        }
-
-        .videos-grid, .screenshots-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 1.5rem;
-          margin-top: 1rem;
-        }
-
-        .game-video, .screenshot {
-          width: 100%;
-          border-radius: 12px;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+          margin: 20px 0 10px;
+          font-weight: 400;
         }
 
         .dlc-section {
-          margin: 2rem 0;
+          margin-top: 30px;
         }
 
-        .dlc-section h2 {
+        .dlc-section h3 {
           color: #fff;
+          font-size: 16px;
+          font-weight: 400;
+          margin-bottom: 15px;
         }
 
-        .dlc-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 1rem;
-          margin-top: 1rem;
+        .dlc-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
         }
 
         .dlc-item {
-          padding: 1.5rem;
           background: rgba(0, 0, 0, 0.3);
-          border-radius: 12px;
-          border: 1px solid rgba(106, 90, 205, 0.3);
-          transition: all 0.3s ease;
+          padding: 10px 15px;
+          border-radius: 3px;
+          color: #8f98a0;
+          font-size: 13px;
         }
 
-        .dlc-item:hover {
-          border-color: #667eea;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        /* Download Tab */
+        .download-content {
+          min-height: 200px;
         }
 
-        .dlc-item h4 {
+        .check-download-btn {
+          background: linear-gradient(to bottom, #75b022 5%, #588a1b 95%);
+          border: none;
           color: #fff;
-          margin-top: 0;
+          padding: 15px 40px;
+          font-size: 15px;
+          font-weight: 600;
+          border-radius: 3px;
+          cursor: pointer;
+          transition: all 0.2s;
+          width: 100%;
         }
 
-        .dlc-item p {
-          color: #b0b0b0;
-          margin-bottom: 0;
+        .check-download-btn:hover:not(:disabled) {
+          background: linear-gradient(to bottom, #8bc53f 5%, #75b022 95%);
         }
 
-        .footer {
-          background: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(10px);
-          border-top: 2px solid rgba(106, 90, 205, 0.3);
-          padding: 2rem 1rem;
+        .check-download-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .download-results {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .download-option {
+          background: rgba(0, 0, 0, 0.3);
+          padding: 15px;
+          border-radius: 3px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-left: 3px solid transparent;
+        }
+
+        .download-option.available {
+          border-left-color: #75b022;
+        }
+
+        .download-option.unavailable {
+          border-left-color: #8f463f;
+        }
+
+        .download-source {
+          color: #fff;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .download-btn {
+          background: linear-gradient(to bottom, #75b022 5%, #588a1b 95%);
+          border: none;
+          color: #fff;
+          padding: 8px 20px;
+          font-size: 13px;
+          font-weight: 600;
+          border-radius: 3px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+          background: linear-gradient(to bottom, #8bc53f 5%, #75b022 95%);
+        }
+
+        .unavailable-text {
+          color: #8f463f;
+          font-size: 13px;
+        }
+
+        /* Sidebar */
+        .game-sidebar {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .purchase-box {
+          background: rgba(0, 0, 0, 0.2);
+          border: 1px solid #000;
+        }
+
+        .purchase-header {
+          background: linear-gradient(to bottom, #2a475e 0%, #1f3344 100%);
+          padding: 12px 15px;
+          border-bottom: 1px solid #000;
+        }
+
+        .purchase-title {
+          color: #fff;
+          font-size: 13px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .purchase-price {
+          padding: 20px 15px;
+          color: #beee11;
+          font-size: 24px;
+          font-weight: 600;
           text-align: center;
-          color: #b0b0b0;
         }
 
-        .footer p {
-          margin: 0;
+        .add-to-cart-btn {
+          width: calc(100% - 30px);
+          margin: 0 15px 15px;
+          background: linear-gradient(to bottom, #75b022 5%, #588a1b 95%);
+          border: none;
+          color: #fff;
+          padding: 12px;
+          font-size: 15px;
+          font-weight: 600;
+          border-radius: 3px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .add-to-cart-btn:hover {
+          background: linear-gradient(to bottom, #8bc53f 5%, #75b022 95%);
+        }
+
+        .game-details {
+          background: rgba(0, 0, 0, 0.2);
+          padding: 15px;
+        }
+
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 8px 0;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+          font-size: 12px;
+        }
+
+        .detail-row:last-child {
+          border-bottom: none;
+        }
+
+        .detail-label {
+          color: #556772;
+        }
+
+        .detail-value {
+          color: #c6d4df;
+          text-align: right;
         }
 
         @media (max-width: 768px) {
-          .header-title {
-            font-size: 2rem;
-          }
-
-          .main-content {
-            padding: 0 0.5rem;
-          }
-
-          .game-header {
+          .game-content {
             grid-template-columns: 1fr;
           }
-          
-          .search-form {
-            flex-direction: column;
-          }
-          
-          .search-input {
-            min-width: auto;
-            width: 100%;
+
+          .game-hero-title {
+            font-size: 24px;
+            padding: 20px;
           }
 
-          .game-title-section {
-            flex-direction: column;
-            align-items: flex-start;
+          .nav-links {
+            display: none;
           }
 
-          .api-result {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
+          .games-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
           }
 
-          .game-title {
-            font-size: 2rem;
-          }
-
-          .recent-search-btn {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
+          .screenshot-thumbs {
+            grid-template-columns: repeat(2, 1fr);
           }
         }
       `}</style>
