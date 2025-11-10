@@ -1,9 +1,12 @@
-import styles from './Footer.module.css'
+import styles from './Footer.module.css';
 
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-      <img src="/logo-netlify.svg" alt="Netlify Logo" className={styles.logo} />
+      <div className={styles.content}>
+        <span>MYGAMELIST™</span>
+        <span>© 2024 All rights reserved</span>
+      </div>
     </footer>
-  )
+  );
 }
