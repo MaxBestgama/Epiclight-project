@@ -131,13 +131,21 @@ export default function Home() {
         {/* Left Sidebar */}
         <aside className="sidebar">
           <div className="sidebar-content">
-            <h1 className="sidebar-title">🎮 Epic Light</h1>
-            <p className="sidebar-subtitle">Find and download Steam games</p>
+            <h1 className="sidebar-title">MYGAMELIST™</h1>
+            <nav className="sidebar-nav">
+              <a href="#" className="nav-link">Sign in</a>
+              <a href="#" className="nav-link">Q Game</a>
+              <a href="#" className="nav-link">Home</a>
+              <a href="#" className="nav-link">Calendar</a>
+              <a href="#" className="nav-link">Community</a>
+            </nav>
+
+            <hr className="divider" />
 
             {/* Recent Searches */}
             {recentSearches.length > 0 && (
               <div className="sidebar-section">
-                <p className="section-title">🕒 Recent Searches</p>
+                <p className="section-title">Recent Searches</p>
                 <div className="recent-searches-list">
                   {recentSearches.map((search) => (
                     <button
@@ -155,7 +163,7 @@ export default function Home() {
 
             {/* Popular Games */}
             <div className="sidebar-section">
-              <p className="section-title">⭐ Popular Games</p>
+              <p className="section-title">Popular Games</p>
               <div className="popular-games-list">
                 {popularGames.map((game) => (
                   <button
@@ -202,58 +210,143 @@ export default function Home() {
 
           {gameData && (
             <div className="game-content">
-              {/* Game Card */}
-              <div className="game-card">
-                {gameData.header_image && (
-                  <div className="game-card-image-wrapper">
-                    <img 
-                      src={gameData.header_image} 
-                      alt={gameData.name}
-                      className="game-card-image"
-                      onError={(e) => {
-                        e.target.style.display = 'none'
-                      }}
-                    />
-                  </div>
-                )}
+              {/* Game Header Section */}
+              <div className="game-header">
+                <div className="game-title-section">
+                  <h1 className="game-main-title">{gameData.name}</h1>
+                  <div className="game-subtitle">One Must Possess Skill In Order To Continue</div>
+                </div>
                 
-                <div className="game-card-content">
-                  <h2 className="game-card-title">{gameData.name}</h2>
-                  
-                  <div className="game-card-info">
-                    <div className="info-row">
-                      <span className="info-label">Steam ID:</span>
-                      <span className="info-value">{gameData.steam_appid}</span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Release Date:</span>
-                      <span className="info-value">{gameData.release_date?.date || 'N/A'}</span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Developer:</span>
-                      <span className="info-value">{gameData.developers?.join(', ') || 'N/A'}</span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Publisher:</span>
-                      <span className="info-value">{gameData.publishers?.join(', ') || 'N/A'}</span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Price:</span>
-                      <span className="info-value price">{gameData.price_overview?.final_formatted || 'Free'}</span>
-                    </div>
+                {/* Stats Grid */}
+                <div className="stats-grid">
+                  <div className="stat-item">
+                    <div className="stat-label">Approval</div>
+                    <div className="stat-value">NS</div>
                   </div>
+                  <div className="stat-item">
+                    <div className="stat-label">MQL</div>
+                    <div className="stat-value">0</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-label">Popularity</div>
+                    <div className="stat-value">0</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-label">Reviews</div>
+                    <div className="stat-value">0</div>
+                  </div>
+                  <div className="stat-item signin-item">
+                    <div className="stat-label">Sign in to add this game to your list</div>
+                    <button className="signin-button">Sign in</button>
+                  </div>
+                </div>
 
-                  <button 
-                    onClick={checkDownloadAvailability}
-                    disabled={checkingDownload}
-                    className="download-check-button"
-                  >
-                    {checkingDownload ? '⏳ Checking...' : '📦 Check Download'}
-                  </button>
+                {/* Action Icons */}
+                <div className="action-icons">
+                  <span className="action-icon">✅️</span>
+                  <span className="action-icon">💤 lists</span>
+                  <span className="action-icon">💤 read</span>
                 </div>
               </div>
 
-              {/* Download Status */}
+              {/* Main Game Card */}
+              <div className="modern-game-card">
+                <div className="card-header">
+                  <h2 className="card-game-title">Jump To Stratos</h2>
+                  <div className="card-game-subtitle">2025 | Main Game</div>
+                </div>
+
+                <div className="progress-stats">
+                  <div className="progress-item">
+                    <div className="progress-count">1</div>
+                    <div className="progress-label">Finished</div>
+                  </div>
+                  <div className="progress-item">
+                    <div className="progress-count">2</div>
+                    <div className="progress-label">Playing</div>
+                  </div>
+                  <div className="progress-item">
+                    <div className="progress-count">0</div>
+                    <div className="progress-label">Want +</div>
+                  </div>
+                  <div className="progress-item">
+                    <div className="progress-count">3</div>
+                    <div className="progress-label">Dropped</div>
+                  </div>
+                  <div className="progress-item">
+                    <div className="progress-count">0</div>
+                    <div className="progress-label">0</div>
+                  </div>
+                  <div className="progress-item">
+                    <div className="progress-count">0</div>
+                    <div className="progress-label">0</div>
+                  </div>
+                </div>
+
+                <div className="game-details">
+                  <div className="detail-row">
+                    <span className="detail-label">Developers:</span>
+                    <span className="detail-value">~</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Publishers:</span>
+                    <span className="detail-value">~</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Genres:</span>
+                    <span className="detail-value">Platform, Adventure, Indie</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Platforms:</span>
+                    <span className="detail-value">PC (Microsoft Windows)</span>
+                  </div>
+                </div>
+
+                <div className="game-description">
+                  {gameData.short_description || "Jump To Stratos is a Rage Physics Platformer that takes place in a cyberpunk city, your goal is to jump your way through the city and past obstacles to reach the top."}
+                </div>
+
+                {/* Story Section */}
+                <div className="story-section">
+                  <h3 className="story-title">Story</h3>
+                  <p className="story-content">
+                    The story follows the journey of the main character whose goal is to climb the city in the Stratos race event, at first he encounters adversity from the crowd but by the end they cheer him on to the finish.
+                  </p>
+                </div>
+
+                {/* Screenshots Section */}
+                <div className="screenshots-section">
+                  <h3 className="screenshots-title">Screenshots (3)</h3>
+                  <div className="screenshots-grid">
+                    {gameData.media?.screenshots?.slice(0, 3).map((screenshot, index) => (
+                      <div key={index} className="screenshot-placeholder">
+                        <img 
+                          src={screenshot.path_thumbnail} 
+                          alt={`Screenshot ${index + 1}`}
+                          className="screenshot-thumb"
+                        />
+                      </div>
+                    ))}
+                    {(!gameData.media?.screenshots || gameData.media.screenshots.length === 0) && (
+                      <>
+                        <div className="screenshot-placeholder"></div>
+                        <div className="screenshot-placeholder"></div>
+                        <div className="screenshot-placeholder"></div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Original content sections (keep for functionality) */}
+              <button 
+                onClick={checkDownloadAvailability}
+                disabled={checkingDownload}
+                className="download-check-button"
+              >
+                {checkingDownload ? '⏳ Checking...' : '📦 Check Download'}
+              </button>
+
               {downloadStatus && (
                 <div className="card">
                   <h3 className="card-title">📦 Download Availability</h3>
@@ -283,71 +376,6 @@ export default function Home() {
                   </div>
                 </div>
               )}
-
-              {/* Description */}
-              <div className="card">
-                <h2 className="card-title">📖 Description</h2>
-                <div 
-                  dangerouslySetInnerHTML={{ __html: gameData.detailed_description }} 
-                  className="description-content"
-                />
-              </div>
-
-              {/* Screenshots */}
-              {gameData.media?.screenshots && gameData.media.screenshots.length > 0 && (
-                <div className="card">
-                  <h3 className="card-title">📸 Screenshots</h3>
-                  <div className="screenshots-grid">
-                    {gameData.media.screenshots.map((screenshot, index) => (
-                      <img 
-                        key={index}
-                        src={screenshot.path_full} 
-                        alt={`Screenshot ${index + 1}`}
-                        className="screenshot"
-                        onError={(e) => {
-                          e.target.style.display = 'none'
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Videos */}
-              {gameData.media?.videos && gameData.media.videos.length > 0 && (
-                <div className="card">
-                  <h3 className="card-title">🎬 Videos</h3>
-                  <div className="videos-grid">
-                    {gameData.media.videos.map((video, index) => (
-                      <div key={index} className="video-item">
-                        <video 
-                          controls 
-                          poster={video.thumbnail}
-                          className="game-video"
-                        >
-                          <source src={video.webm?.max || video.mp4?.max} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* DLCs */}
-              {gameData.dlcs && gameData.dlcs.length > 0 && (
-                <div className="card">
-                  <h2 className="card-title">🎁 Downloadable Content (DLC)</h2>
-                  <div className="dlc-grid">
-                    {gameData.dlcs.map((dlc) => (
-                      <div key={dlc.id} className="dlc-item">
-                        <h4>{dlc.name}</h4>
-                        <p>DLC ID: {dlc.id}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </main>
@@ -362,6 +390,7 @@ export default function Home() {
           min-height: 100vh;
           background: #0a0e27;
           color: #e4e4e7;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         .layout-wrapper {
@@ -386,15 +415,34 @@ export default function Home() {
 
         .sidebar-title {
           font-size: 1.5rem;
-          margin: 0 0 0.5rem 0;
+          margin: 0 0 1.5rem 0;
           color: #ffffff;
           font-weight: 700;
+          font-family: 'Arial Black', sans-serif;
         }
 
-        .sidebar-subtitle {
-          margin: 0 0 2rem 0;
-          color: #64748b;
-          font-size: 0.875rem;
+        .sidebar-nav {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .nav-link {
+          color: #cbd5e1;
+          text-decoration: none;
+          font-size: 0.9rem;
+          transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+          color: #ffffff;
+        }
+
+        .divider {
+          border: none;
+          border-top: 1px solid #1e293b;
+          margin: 1.5rem 0;
         }
 
         .sidebar-section {
@@ -512,16 +560,6 @@ export default function Home() {
           height: 48px;
         }
 
-        .search-button:hover:not(:disabled) {
-          background: #2563eb;
-        }
-
-        .search-button:disabled {
-          background: #334155;
-          cursor: not-allowed;
-          opacity: 0.5;
-        }
-
         .error-message {
           color: #ef4444;
           margin-bottom: 1.5rem;
@@ -545,75 +583,241 @@ export default function Home() {
           to { opacity: 1; transform: translateY(0); }
         }
 
-        .game-card {
+        /* Modern Game Card Styles */
+        .game-header {
+          margin-bottom: 2rem;
+        }
+
+        .game-main-title {
+          font-size: 2.5rem;
+          font-weight: 800;
+          color: #ffffff;
+          margin: 0 0 0.5rem 0;
+          line-height: 1.1;
+        }
+
+        .game-subtitle {
+          font-size: 1.1rem;
+          color: #94a3b8;
+          margin-bottom: 2rem;
+          font-weight: 500;
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 1rem;
+          margin-bottom: 1rem;
+          background: #0f1629;
+          padding: 1.5rem;
+          border-radius: 12px;
+          border: 1px solid #1e293b;
+        }
+
+        .stat-item {
+          text-align: center;
+        }
+
+        .stat-label {
+          font-size: 0.75rem;
+          color: #94a3b8;
+          margin-bottom: 0.5rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #ffffff;
+        }
+
+        .signin-item {
+          grid-column: span 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .signin-button {
+          background: #3b82f6;
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 0.5rem;
+          transition: background 0.2s ease;
+        }
+
+        .signin-button:hover {
+          background: #2563eb;
+        }
+
+        .action-icons {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+          color: #94a3b8;
+          font-size: 0.9rem;
+        }
+
+        .action-icon {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .modern-game-card {
           background: #0f1629;
           border: 1px solid #1e293b;
           border-radius: 12px;
-          overflow: hidden;
-          margin-bottom: 1.5rem;
+          padding: 2rem;
+          margin-bottom: 2rem;
         }
 
-        .game-card-image-wrapper {
-          width: 100%;
-          height: 300px;
-          overflow: hidden;
+        .card-header {
+          margin-bottom: 2rem;
+        }
+
+        .card-game-title {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0 0 0.5rem 0;
+        }
+
+        .card-game-subtitle {
+          font-size: 1rem;
+          color: #94a3b8;
+        }
+
+        .progress-stats {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+          padding: 1.5rem;
           background: #1e293b;
+          border-radius: 8px;
         }
 
-        .game-card-image {
+        .progress-item {
+          text-align: center;
+        }
+
+        .progress-count {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #ffffff;
+          margin-bottom: 0.25rem;
+        }
+
+        .progress-label {
+          font-size: 0.75rem;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .game-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          margin-bottom: 2rem;
+          padding: 1.5rem;
+          background: #1e293b;
+          border-radius: 8px;
+        }
+
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.5rem 0;
+        }
+
+        .detail-label {
+          color: #94a3b8;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .detail-value {
+          color: #ffffff;
+          font-size: 0.9rem;
+        }
+
+        .game-description {
+          line-height: 1.6;
+          color: #cbd5e1;
+          margin-bottom: 2rem;
+          padding: 1.5rem;
+          background: #1e293b;
+          border-radius: 8px;
+          font-size: 0.95rem;
+        }
+
+        .story-section {
+          margin-bottom: 2rem;
+        }
+
+        .story-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #ffffff;
+          margin: 0 0 1rem 0;
+        }
+
+        .story-content {
+          line-height: 1.6;
+          color: #cbd5e1;
+          margin: 0;
+          padding: 1.5rem;
+          background: #1e293b;
+          border-radius: 8px;
+        }
+
+        .screenshots-section {
+          margin-bottom: 2rem;
+        }
+
+        .screenshots-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #ffffff;
+          margin: 0 0 1rem 0;
+        }
+
+        .screenshots-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+        }
+
+        .screenshot-placeholder {
+          aspect-ratio: 16/9;
+          background: #1e293b;
+          border-radius: 8px;
+          border: 1px solid #334155;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #64748b;
+          font-size: 0.875rem;
+          overflow: hidden;
+        }
+
+        .screenshot-thumb {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
 
-        .game-card-content {
-          padding: 1.75rem;
-        }
-
-        .game-card-title {
-          font-size: 1.75rem;
-          font-weight: 700;
-          color: #ffffff;
-          margin: 0 0 1.5rem 0;
-        }
-
-        .game-card-info {
-          display: flex;
-          flex-direction: column;
-          gap: 0.875rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .info-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-bottom: 0.875rem;
-          border-bottom: 1px solid #1e293b;
-        }
-
-        .info-row:last-child {
-          border-bottom: none;
-          padding-bottom: 0;
-        }
-
-        .info-label {
-          color: #94a3b8;
-          font-size: 0.875rem;
-          font-weight: 500;
-        }
-
-        .info-value {
-          color: #e4e4e7;
-          font-size: 0.875rem;
-          text-align: right;
-        }
-
-        .info-value.price {
-          color: #10b981;
-          font-weight: 600;
-        }
-
+        /* Keep original functional styles */
         .download-check-button {
           width: 100%;
           padding: 1rem;
@@ -625,16 +829,7 @@ export default function Home() {
           cursor: pointer;
           transition: all 0.2s ease;
           font-weight: 600;
-        }
-
-        .download-check-button:hover:not(:disabled) {
-          background: #059669;
-        }
-
-        .download-check-button:disabled {
-          background: #334155;
-          cursor: not-allowed;
-          opacity: 0.5;
+          margin-bottom: 1.5rem;
         }
 
         .card {
@@ -643,13 +838,6 @@ export default function Home() {
           border-radius: 12px;
           padding: 1.75rem;
           margin-bottom: 1.5rem;
-        }
-
-        .card-title {
-          margin: 0 0 1.25rem 0;
-          font-size: 1.25rem;
-          font-weight: 600;
-          color: #ffffff;
         }
 
         .api-results {
@@ -696,10 +884,6 @@ export default function Home() {
           transition: all 0.2s ease;
         }
 
-        .download-link:hover {
-          background: #2563eb;
-        }
-
         .status-available {
           color: #10b981;
           display: flex;
@@ -709,54 +893,6 @@ export default function Home() {
 
         .status-unavailable {
           color: #ef4444;
-        }
-
-        .description-content {
-          line-height: 1.7;
-          color: #cbd5e1;
-        }
-
-        .screenshots-grid, .videos-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 1rem;
-        }
-
-        .screenshot, .game-video {
-          width: 100%;
-          border-radius: 8px;
-          border: 1px solid #1e293b;
-        }
-
-        .dlc-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 1rem;
-        }
-
-        .dlc-item {
-          padding: 1.25rem;
-          background: #1e293b;
-          border-radius: 8px;
-          border: 1px solid #334155;
-          transition: all 0.2s ease;
-        }
-
-        .dlc-item:hover {
-          border-color: #3b82f6;
-        }
-
-        .dlc-item h4 {
-          color: #ffffff;
-          margin: 0 0 0.5rem 0;
-          font-size: 1rem;
-          font-weight: 600;
-        }
-
-        .dlc-item p {
-          color: #94a3b8;
-          margin: 0;
-          font-size: 0.875rem;
         }
 
         @media (max-width: 968px) {
@@ -789,7 +925,15 @@ export default function Home() {
             width: auto;
           }
 
-          .screenshots-grid, .videos-grid {
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .progress-stats {
+            grid-template-columns: repeat(3, 1fr);
+          }
+
+          .screenshots-grid {
             grid-template-columns: 1fr;
           }
 
@@ -799,8 +943,8 @@ export default function Home() {
             gap: 0.75rem;
           }
 
-          .download-link {
-            margin-left: 0;
+          .game-main-title {
+            font-size: 2rem;
           }
         }
       `}</style>
