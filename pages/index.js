@@ -104,7 +104,7 @@ export default function Home() {
       <header className="header">
         <div className="header-content">
           <h1 className="header-title">
-            <span className="logo-icon">🎮</span> MYGAMELIST
+            <span className="logo-icon"></span> MYGAMELIST
           </h1>
           <div className="search-form">
             <input
@@ -135,33 +135,7 @@ export default function Home() {
             {/* Left Column - Game Info */}
             <div className="left-column">
               {/* Stats Card */}
-              <div className="stats-card">
-                <img 
-                  src={gameData.header_image} 
-                  alt={gameData.name}
-                  className="stats-cover"
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                  }}
-                />
-                <div className="stats-grid">
-                  <div className="stat-item">
-                    <div className="stat-label">MGL</div>
-                    <div className="stat-value">NS</div>
-                    <div className="stat-sublabel">⭐ 0</div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-label">Popularity</div>
-                    <div className="stat-value">0</div>
-                    <div className="stat-sublabel">📊 lists</div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-label">Reviews</div>
-                    <div className="stat-value">0</div>
-                    <div className="stat-sublabel">💬 read</div>
-                  </div>
-                </div>
-              </div>
+          
 
               {/* Download Check Card */}
               <div className="download-card">
@@ -177,7 +151,7 @@ export default function Home() {
               {/* Download Status */}
               {downloadStatus && (
                 <div className="download-status-card">
-                  <h3 className="section-title">📦 Download Availability</h3>
+                  <h3 className="section-title">Download Availability</h3>
                   <div className="download-results">
                     {downloadStatus.map((result, index) => (
                       <div key={index} className={`download-item ${result.available ? 'available' : 'unavailable'}`}>
@@ -185,7 +159,7 @@ export default function Home() {
                         <div className="download-action">
                           {result.available ? (
                             <>
-                              <span className="status-badge available">✅ Available</span>
+                              <span className="status-badge available">Available</span>
                               <button 
                                 onClick={() => handleDownload(result.directUrl)}
                                 className="download-btn"
@@ -195,7 +169,7 @@ export default function Home() {
                             </>
                           ) : (
                             <span className="status-badge unavailable">
-                              ❌ Unavailable
+                              Unavailable
                             </span>
                           )}
                         </div>
@@ -205,31 +179,24 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Game Status Stats */}
-              <div className="status-card">
-                <ul className="status-list">
-                  <li className="status-item">
-                    <span className="status-icon">🏁 finished</span>
-                    <span className="status-count">0</span>
-                  </li>
-                  <li className="status-item">
-                    <span className="status-icon">🎮 playing</span>
-                    <span className="status-count">0</span>
-                  </li>
-                  <li className="status-item">
-                    <span className="status-icon">✨ want</span>
-                    <span className="status-count">0</span>
-                  </li>
-                  <li className="status-item">
-                    <span className="status-icon">💀 dropped</span>
-                    <span className="status-count">0</span>
-                  </li>
-                </ul>
-              </div>
+              {/* DLC List */}
+              {gameData.dlc && gameData.dlc.length > 0 && (
+                <div className="dlc-card">
+                  <h3 className="section-title">Downloadable Content ({gameData.dlc.length})</h3>
+                  <div className="dlc-list">
+                    {gameData.dlc.map((dlcId) => (
+                      <div key={dlcId} className="dlc-list-item">
+                        <span className="dlc-icon"></span>
+                        <span className="dlc-id">App ID: {dlcId}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Game Info */}
               <div className="info-card">
-                <h3 className="section-title">📋 Game Information</h3>
+                <h3 className="section-title"> Game Information</h3>
                 <ul className="info-list">
                   <li>
                     <span className="info-label">Developers:</span>
@@ -286,7 +253,7 @@ export default function Home() {
                   {gameData.media?.screenshots && gameData.media.screenshots.length > 0 && (
                     <section className="media-section">
                       <h2 className="media-title">
-                        <span className="media-icon">📸</span>
+                        <span className="media-icon"></span>
                         Screenshots ({gameData.media.screenshots.length})
                       </h2>
                       <div className="screenshots-grid">
@@ -309,7 +276,7 @@ export default function Home() {
                   {gameData.media?.videos && gameData.media.videos.length > 0 && (
                     <section className="media-section">
                       <h2 className="media-title">
-                        <span className="media-icon">🎬</span>
+                        <span className="media-icon"></span>
                         Videos ({gameData.media.videos.length})
                       </h2>
                       <div className="videos-grid">
@@ -333,7 +300,7 @@ export default function Home() {
                   {gameData.detailed_description && (
                     <section className="media-section">
                       <h2 className="media-title">
-                        <span className="media-icon">📖</span>
+                        <span className="media-icon"></span>
                         Full Description
                       </h2>
                       <div 
