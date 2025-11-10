@@ -8,6 +8,14 @@ export default function Home() {
   const [downloadStatus, setDownloadStatus] = useState(null)
   const [checkingDownload, setCheckingDownload] = useState(false)
 
+  // Auto-load CS:GO on mount
+  useEffect(() => {
+    setGameId('730')
+    setTimeout(() => {
+      fetchGameDataById('730')
+    }, 500)
+  }, [])
+
   // Clear error when user starts typing
   useEffect(() => {
     if (error && gameId) {
@@ -22,25 +30,15 @@ export default function Home() {
     }
   }, [gameData]);
 
-  const fetchGameData = async () => {
-    if (!gameId.trim()) {
-      setError('Please enter a Steam Game ID')
-      return
-    }
-
-    // Validate numeric ID
-    if (isNaN(gameId)) {
-      setError('Game ID must be a number')
-      return
-    }
+  const fetchGameDataById = async (id) => {
+    if (!id || isNaN(id)) return
 
     setLoading(true)
     setError('')
     setDownloadStatus(null)
-    setGameData(null)
     
     try {
-      const response = await fetch(`/api/steam-game?id=${gameId}`)
+      const response = await fetch(`/api/steam-game?id=${id}`)
       const data = await response.json()
       
       if (data.success) {
@@ -55,6 +53,20 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const fetchGameData = async () => {
+    if (!gameId.trim()) {
+      setError('Please enter a Steam Game ID')
+      return
+    }
+
+    if (isNaN(gameId)) {
+      setError('Game ID must be a number')
+      return
+    }
+
+    fetchGameDataById(gameId)
   }
 
   const checkDownloadAvailability = async () => {
@@ -91,7 +103,9 @@ export default function Home() {
       {/* Header with Search */}
       <header className="header">
         <div className="header-content">
-          <h1 className="header-title">Epicano 247</h1>
+          <h1 className="header-title">
+            <span className="logo-icon">🎮</span> MYGAMELIST
+          </h1>
           <div className="search-form">
             <input
               type="text"
@@ -102,7 +116,7 @@ export default function Home() {
               className="search-input"
             />
             <button onClick={fetchGameData} disabled={loading} className="search-button">
-              {loading ? 'Search' : 'Searching'}
+              {loading ? '⏳' : '🔍'}
             </button>
           </div>
         </div>
@@ -112,7 +126,7 @@ export default function Home() {
       <main className="main-content">
         {error && !gameData && (
           <div className="error-message">
-            <strong></strong> {error}
+            <strong>⚠️</strong> {error}
           </div>
         )}
 
@@ -120,6 +134,34 @@ export default function Home() {
           <div className="game-layout">
             {/* Left Column - Game Info */}
             <div className="left-column">
+              {/* Stats Card */}
+              <div className="stats-card">
+                <img 
+                  src={gameData.header_image} 
+                  alt={gameData.name}
+                  className="stats-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none'
+                  }}
+                />
+                <div className="stats-grid">
+                  <div className="stat-item">
+                    <div className="stat-label">MGL</div>
+                    <div className="stat-value">NS</div>
+                    <div className="stat-sublabel">⭐ 0</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-label">Popularity</div>
+                    <div className="stat-value">0</div>
+                    <div className="stat-sublabel">📊 lists</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-label">Reviews</div>
+                    <div className="stat-value">0</div>
+                    <div className="stat-sublabel">💬 read</div>
+                  </div>
+                </div>
+              </div>
 
               {/* Download Check Card */}
               <div className="download-card">
@@ -128,14 +170,14 @@ export default function Home() {
                   disabled={checkingDownload}
                   className="download-check-btn"
                 >
-                  {checkingDownload ? 'Checking...' : 'Check download'}
+                  {checkingDownload ? '⏳ Checking...' : '📦 Check Download'}
                 </button>
               </div>
 
               {/* Download Status */}
               {downloadStatus && (
                 <div className="download-status-card">
-                  <h3 className="section-title">DOWNLOAD AVAILABILITY</h3>
+                  <h3 className="section-title">📦 Download Availability</h3>
                   <div className="download-results">
                     {downloadStatus.map((result, index) => (
                       <div key={index} className={`download-item ${result.available ? 'available' : 'unavailable'}`}>
@@ -143,7 +185,7 @@ export default function Home() {
                         <div className="download-action">
                           {result.available ? (
                             <>
-                              <span className="status-badge available">Available</span>
+                              <span className="status-badge available">✅ Available</span>
                               <button 
                                 onClick={() => handleDownload(result.directUrl)}
                                 className="download-btn"
@@ -153,7 +195,7 @@ export default function Home() {
                             </>
                           ) : (
                             <span className="status-badge unavailable">
-                               Unavailable
+                              ❌ Unavailable
                             </span>
                           )}
                         </div>
@@ -163,10 +205,31 @@ export default function Home() {
                 </div>
               )}
 
+              {/* Game Status Stats */}
+              <div className="status-card">
+                <ul className="status-list">
+                  <li className="status-item">
+                    <span className="status-icon">🏁 finished</span>
+                    <span className="status-count">0</span>
+                  </li>
+                  <li className="status-item">
+                    <span className="status-icon">🎮 playing</span>
+                    <span className="status-count">0</span>
+                  </li>
+                  <li className="status-item">
+                    <span className="status-icon">✨ want</span>
+                    <span className="status-count">0</span>
+                  </li>
+                  <li className="status-item">
+                    <span className="status-icon">💀 dropped</span>
+                    <span className="status-count">0</span>
+                  </li>
+                </ul>
+              </div>
 
               {/* Game Info */}
               <div className="info-card">
-                <h3 className="section-title"> GAME INFORMATION</h3>
+                <h3 className="section-title">📋 Game Information</h3>
                 <ul className="info-list">
                   <li>
                     <span className="info-label">Developers:</span>
@@ -270,7 +333,7 @@ export default function Home() {
                   {gameData.detailed_description && (
                     <section className="media-section">
                       <h2 className="media-title">
-                        <span className="media-icon"></span>
+                        <span className="media-icon">📖</span>
                         Full Description
                       </h2>
                       <div 
@@ -293,18 +356,18 @@ export default function Home() {
 
         .page-container {
           min-height: 100vh;
-          background: #1a1a2e;
+          background: #0f0f0f;
           color: #e4e4e7;
         }
 
         .header {
-          background: #16213e;
-          border-bottom: 3px solid #e94560;
-          padding: 1.5rem 2rem;
+          background: #1a1a1a;
+          border-bottom: 1px solid #2a2a2a;
+          padding: 1rem 2rem;
           position: sticky;
           top: 0;
           z-index: 100;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         .header-content {
@@ -317,12 +380,19 @@ export default function Home() {
         }
 
         .header-title {
-          font-size: 1.5rem;
-          color: #e94560;
+          font-size: 1.25rem;
+          color: #00d9ff;
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.05em;
           margin: 0;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .logo-icon {
+          font-size: 1.5rem;
         }
 
         .search-form {
@@ -332,10 +402,10 @@ export default function Home() {
         }
 
         .search-input {
-          padding: 0.75rem 1rem;
-          font-size: 0.9rem;
-          background: #1a1a2e;
-          border: 2px solid #0f3460;
+          padding: 0.625rem 1rem;
+          font-size: 0.875rem;
+          background: #2a2a2a;
+          border: 1px solid #3a3a3a;
           border-radius: 8px;
           width: 300px;
           color: #e4e4e7;
@@ -343,20 +413,20 @@ export default function Home() {
         }
 
         .search-input::placeholder {
-          color: #64748b;
+          color: #6a6a6a;
         }
 
         .search-input:focus {
           outline: none;
-          border-color: #e94560;
-          box-shadow: 0 0 10px rgba(233, 69, 96, 0.3);
+          border-color: #00d9ff;
+          background: #1f1f1f;
         }
 
         .search-button {
-          padding: 0.75rem 1rem;
-          font-size: 1.25rem;
-          background: #e94560;
-          color: white;
+          padding: 0.625rem 1rem;
+          font-size: 1.125rem;
+          background: #00d9ff;
+          color: #0f0f0f;
           border: none;
           border-radius: 8px;
           cursor: pointer;
@@ -364,17 +434,17 @@ export default function Home() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 48px;
-          height: 48px;
+          width: 42px;
+          height: 42px;
+          font-weight: 700;
         }
 
         .search-button:hover:not(:disabled) {
-          background: #d63651;
-          box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
+          background: #00b8d9;
         }
 
         .search-button:disabled {
-          background: #334155;
+          background: #3a3a3a;
           cursor: not-allowed;
           opacity: 0.5;
         }
@@ -386,13 +456,13 @@ export default function Home() {
         }
 
         .error-message {
-          color: #ef4444;
+          color: #ff4444;
           margin-bottom: 1.5rem;
           font-weight: 500;
           padding: 1rem;
-          background: #16213e;
-          border: 2px solid #e94560;
-          border-left: 4px solid #e94560;
+          background: #2a1a1a;
+          border: 1px solid #4a2a2a;
+          border-left: 3px solid #ff4444;
           border-radius: 8px;
           display: flex;
           align-items: center;
@@ -401,7 +471,7 @@ export default function Home() {
 
         .game-layout {
           display: grid;
-          grid-template-columns: 350px 1fr;
+          grid-template-columns: 320px 1fr;
           gap: 2rem;
           animation: fadeIn 0.3s ease;
         }
@@ -415,13 +485,13 @@ export default function Home() {
         .left-column {
           display: flex;
           flex-direction: column;
-          gap: 1.5rem;
+          gap: 1.25rem;
         }
 
         .stats-card {
-          background: rgba(27, 29, 31, 0.5);
+          background: rgba(30, 30, 30, 0.6);
           border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 20px;
+          border-radius: 16px;
           padding: 1rem;
           backdrop-filter: blur(20px);
         }
@@ -430,14 +500,15 @@ export default function Home() {
           width: 64px;
           height: 90px;
           object-fit: cover;
-          border-radius: 8px;
+          border-radius: 6px;
           margin-bottom: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .stats-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 1rem;
+          gap: 0.75rem;
         }
 
         .stat-item {
@@ -449,70 +520,71 @@ export default function Home() {
         }
 
         .stat-label {
-          font-size: 0.8125rem;
-          color: rgba(255, 255, 255, 0.8);
-          text-shadow: 1px 1px 2px rgba(27, 29, 31, 0.5);
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.5);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
 
         .stat-value {
-          font-size: 2rem;
+          font-size: 1.75rem;
           font-weight: 700;
-          color: #888;
+          color: #6a6a6a;
         }
 
         .stat-sublabel {
-          font-size: 0.8125rem;
-          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.4);
           display: flex;
           align-items: center;
           gap: 0.25rem;
         }
 
         .download-card {
-          background: rgba(27, 29, 31, 0.5);
+          background: rgba(30, 30, 30, 0.6);
           border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 20px;
+          border-radius: 16px;
           padding: 1rem;
           backdrop-filter: blur(20px);
         }
 
         .download-check-btn {
           width: 100%;
-          padding: 1rem;
-          background: linear-gradient(135deg, #e94560 0%, #0f3460 100%);
-          color: white;
+          padding: 0.875rem;
+          background: #00d9ff;
+          color: #0f0f0f;
           border: none;
-          border-radius: 12px;
+          border-radius: 10px;
           cursor: pointer;
-          font-weight: 600;
-          font-size: 0.95rem;
+          font-weight: 700;
+          font-size: 0.875rem;
           text-transform: uppercase;
           letter-spacing: 0.05em;
           transition: all 0.2s ease;
         }
 
         .download-check-btn:hover:not(:disabled) {
-          box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
-          transform: translateY(-2px);
+          background: #00b8d9;
+          transform: translateY(-1px);
         }
 
         .download-check-btn:disabled {
-          background: #334155;
+          background: #3a3a3a;
           cursor: not-allowed;
           opacity: 0.5;
         }
 
         .download-status-card {
-          background: rgba(27, 29, 31, 0.5);
+          background: rgba(30, 30, 30, 0.6);
           border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 20px;
-          padding: 1.5rem;
+          border-radius: 16px;
+          padding: 1.25rem;
           backdrop-filter: blur(20px);
         }
 
         .section-title {
-          font-size: 0.875rem;
-          color: #e94560;
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.7);
           text-transform: uppercase;
           letter-spacing: 0.05em;
           font-weight: 600;
@@ -522,38 +594,39 @@ export default function Home() {
         .download-results {
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
+          gap: 0.625rem;
         }
 
         .download-item {
-          padding: 1rem;
-          background: #0f3460;
+          padding: 0.875rem;
+          background: #1a1a1a;
           border-radius: 8px;
-          border-left: 4px solid #1a1a2e;
+          border: 1px solid #2a2a2a;
         }
 
         .download-item.available {
-          border-left-color: #00d9ff;
+          border-left: 3px solid #00d9ff;
         }
 
         .download-item.unavailable {
-          border-left-color: #e94560;
+          border-left: 3px solid #ff4444;
         }
 
         .download-name {
           font-weight: 600;
           margin-bottom: 0.5rem;
           color: #ffffff;
+          font-size: 0.875rem;
         }
 
         .download-action {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 0.625rem;
         }
 
         .status-badge {
-          font-size: 0.875rem;
+          font-size: 0.8125rem;
         }
 
         .status-badge.available {
@@ -561,33 +634,32 @@ export default function Home() {
         }
 
         .status-badge.unavailable {
-          color: #e94560;
+          color: #ff4444;
         }
 
         .download-btn {
-          padding: 0.5rem 1rem;
-          background: #e94560;
-          color: white;
+          padding: 0.5rem 0.875rem;
+          background: #00d9ff;
+          color: #0f0f0f;
           border: none;
           border-radius: 6px;
           cursor: pointer;
-          font-size: 0.875rem;
-          font-weight: 600;
+          font-size: 0.8125rem;
+          font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.05em;
           transition: all 0.2s ease;
         }
 
         .download-btn:hover {
-          background: #d63651;
-          box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
+          background: #00b8d9;
         }
 
         .status-card {
-          background: rgba(27, 29, 31, 0.5);
+          background: rgba(30, 30, 30, 0.6);
           border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 20px;
-          padding: 1.5rem;
+          border-radius: 16px;
+          padding: 1.25rem;
           backdrop-filter: blur(20px);
         }
 
@@ -597,15 +669,15 @@ export default function Home() {
           margin: 0;
           display: flex;
           flex-direction: column;
-          gap: 1rem;
+          gap: 0.75rem;
         }
 
         .status-item {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-size: 0.875rem;
-          color: rgba(255, 255, 255, 0.5);
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.4);
         }
 
         .status-icon {
@@ -620,10 +692,10 @@ export default function Home() {
         }
 
         .info-card {
-          background: rgba(27, 29, 31, 0.5);
+          background: rgba(30, 30, 30, 0.6);
           border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 20px;
-          padding: 1.5rem;
+          border-radius: 16px;
+          padding: 1.25rem;
           backdrop-filter: blur(20px);
         }
 
@@ -640,21 +712,22 @@ export default function Home() {
           display: flex;
           flex-direction: column;
           gap: 0.25rem;
-          font-size: 0.875rem;
+          font-size: 0.8125rem;
         }
 
         .info-label {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(255, 255, 255, 0.4);
         }
 
         .info-value {
           color: #ffffff;
+          font-weight: 500;
         }
 
         .info-value.price {
           color: #00d9ff;
-          font-weight: 600;
-          font-size: 1rem;
+          font-weight: 700;
+          font-size: 0.9375rem;
         }
 
         /* Right Column */
@@ -663,9 +736,9 @@ export default function Home() {
         }
 
         .game-card {
-          background: rgba(27, 29, 31, 1);
-          border: 1px solid rgba(56, 58, 64, 0.6);
-          border-radius: 20px;
+          background: #1a1a1a;
+          border: 1px solid #2a2a2a;
+          border-radius: 16px;
           overflow: hidden;
           position: relative;
         }
@@ -675,7 +748,7 @@ export default function Home() {
           aspect-ratio: 16/9;
           width: 100%;
           overflow: hidden;
-          margin-bottom: -6.5rem;
+          margin-bottom: -6rem;
         }
 
         .game-hero-image {
@@ -688,7 +761,7 @@ export default function Home() {
         .game-hero-gradient {
           position: absolute;
           inset: 0;
-          background: linear-gradient(0deg, #1b1d1f 0%, rgba(27, 29, 31, 0) 30%);
+          background: linear-gradient(0deg, #1a1a1a 0%, rgba(26, 26, 26, 0) 30%);
         }
 
         .game-content {
@@ -706,7 +779,7 @@ export default function Home() {
 
         .game-meta {
           font-size: 0.875rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(255, 255, 255, 0.4);
           margin: 0 0 1.5rem 0;
         }
 
@@ -715,9 +788,9 @@ export default function Home() {
         }
 
         .description-text {
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.6);
           line-height: 1.6;
-          font-size: 0.95rem;
+          font-size: 0.9375rem;
         }
 
         .media-section {
@@ -731,11 +804,12 @@ export default function Home() {
           font-size: 0.875rem;
           color: #ffffff;
           margin: 0 0 1rem 0;
+          font-weight: 600;
         }
 
         .media-icon {
           opacity: 0.3;
-          font-size: 1.25rem;
+          font-size: 1.125rem;
         }
 
         .screenshots-grid {
@@ -748,14 +822,14 @@ export default function Home() {
           width: 100%;
           aspect-ratio: 16/9;
           object-fit: cover;
-          border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+          border: 1px solid #2a2a2a;
           transition: all 0.2s ease;
         }
 
         .screenshot:hover {
-          border-color: #e94560;
-          box-shadow: 0 0 15px rgba(233, 69, 96, 0.3);
+          border-color: #00d9ff;
+          transform: translateY(-2px);
         }
 
         .videos-grid {
@@ -771,14 +845,14 @@ export default function Home() {
         .game-video {
           width: 100%;
           height: 100%;
-          border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+          border: 1px solid #2a2a2a;
         }
 
         .full-description {
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.6);
           line-height: 1.7;
-          font-size: 0.95rem;
+          font-size: 0.9375rem;
         }
 
         @media (max-width: 1024px) {
